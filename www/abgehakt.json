@@ -1,0 +1,21 @@
+[
+    {
+      "id": 1,
+      "name": "Erste Liste",
+      "entries": [
+        { "id": 1, "name": "Alpha", "active": true },
+        { "id": 2, "name": "Beta", "active": true },
+        { "id": 3, "name": "Gamma", "active": true },
+        { "id": 4, "name": "Delta", "active": true }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Zweite Liste",
+      "entries": [
+        { "id": 1, "name": "Eins", "active": true },
+        { "id": 2, "name": "Zwei", "active": true }
+      ]
+    }
+  ]
+  
