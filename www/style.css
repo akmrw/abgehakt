@@ -1,0 +1,17 @@
+/* ===== Seitenstruktur ===== */
+
+body {
+    font-family: "Saira", sans-serif;
+    font-size: 16px;
+    color: #DEDEDE;
+    background-color: black;
+}
+
+header {
+    margin-top: 75px;
+    text-align: center;
+}
+
+header img {
+    max-height: 100px;
+}
