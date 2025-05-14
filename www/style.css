@@ -13,7 +13,7 @@ header {
 }
 
 header img {
-    max-height: 100px;
+    max-height: 70px;
     max-width: 90%;
 }
 
@@ -43,16 +43,28 @@ footer a {
 /* ===== Karten-Loader ===== */
 
 #listLoader {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    display: block; /* statt flex */
     background: #333;
     color: #DEDEDE;
     text-align: center;
     border-radius: 8px;
     margin: 5px auto;
     max-width: 100%;
+    padding: 10px;
+}
+
+#listContainer button {
+    display: block;
+    width: 90%;
+    margin: 10px auto;
+    padding: 10px;
+    background-color: #444;
+    border: none;
+    border-radius: 4px;
+    color: #DEDEDE;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: left;
 }
 
 #entryContainer {
@@ -70,4 +82,18 @@ footer a {
 
 #entryContainer li {
     margin: 8px 0;
+    padding: 10px;
+    background-color: #444;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+#entryContainer li.checked label {
+    text-decoration: line-through;
+    color: #888;
+}
+
+#entryContainer input[type="checkbox"] {
+    margin-right: 10px;
 }
