@@ -79,20 +79,34 @@ document.addEventListener("DOMContentLoaded", () => {
     
         function createEntryElement(entry) {
             const li = document.createElement("li");
-    
+        
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `entry_${entry.id}`;
             checkbox.checked = !entry.active;
-    
+        
             const label = document.createElement("label");
             label.htmlFor = checkbox.id;
             label.textContent = entry.name;
-    
+        
             li.appendChild(checkbox);
             li.appendChild(label);
             li.classList.toggle("checked", checkbox.checked);
-    
+        
+            // ✅ Nur aktive Einträge verschiebbar machen
+            if (entry.active) {
+                li.draggable = true;
+        
+                li.addEventListener("dragstart", (e) => {
+                    li.classList.add("dragging");
+                    e.dataTransfer.setData("text/plain", entry.id);
+                });
+        
+                li.addEventListener("dragend", () => {
+                    li.classList.remove("dragging");
+                });
+            }
+        
             checkbox.addEventListener("change", () => {
                 const currentList = lists.find(l => l.id === list.id);
                 const currentEntry = currentList.entries.find(e => e.id === entry.id);
@@ -100,19 +114,54 @@ document.addEventListener("DOMContentLoaded", () => {
                 writeFile(lists);
                 showListEntries(currentList); // neu sortieren & anzeigen
             });
-    
+        
             li.addEventListener("click", (e) => {
                 if (e.target === li) {
                     checkbox.click();
                 }
             });
-    
+        
             return li;
-        }
+        }        
     
         activeEntries.forEach(entry => {
             ul.appendChild(createEntryElement(entry));
         });
+
+        ul.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            const draggingEl = ul.querySelector(".dragging");
+            const afterElement = getDragAfterElement(ul, e.clientY);
+            if (afterElement == null) {
+                // Füge vor dem Dummy-Divider ein → also vor dividerAboveDummy
+                const dividerAboveDummy = ul.querySelector("hr:nth-last-of-type(2)");
+                if (dividerAboveDummy) {
+                    ul.insertBefore(draggingEl, dividerAboveDummy);
+                } else {
+                    ul.appendChild(draggingEl); // Fallback (sollte nie nötig sein)
+                }
+            } else {
+                ul.insertBefore(draggingEl, afterElement);
+            }            
+        });
+        
+        ul.addEventListener("drop", () => {
+            const currentList = lists.find(l => l.id === list.id);
+            const newOrder = [];
+        
+            // Nur aktive <li> berücksichtigen
+            const items = ul.querySelectorAll("li:not(.checked):not(.dummy-entry)");
+            items.forEach(li => {
+                const id = li.querySelector("input[type='checkbox']").id.replace("entry_", "");
+                const entry = currentList.entries.find(e => e.id == id);
+                if (entry) newOrder.push(entry);
+            });
+        
+            const inactiveEntries = currentList.entries.filter(e => !e.active);
+            currentList.entries = [...newOrder, ...inactiveEntries]; // Neue Sortierung übernehmen
+        
+            writeFile(lists);
+        });        
     
         if (checkedEntries.length > 0) {
             const divider = document.createElement("hr");
@@ -122,6 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
         checkedEntries.forEach(entry => {
             ul.appendChild(createEntryElement(entry));
         });
+
 
         const dividerAboveDummy = document.createElement("hr");
         ul.appendChild(dividerAboveDummy);
@@ -165,7 +215,22 @@ document.addEventListener("DOMContentLoaded", () => {
         entryContainer.appendChild(buttonRow);
     
         entryContainer.classList.remove("hidden");
-    }            
+    }
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll("li:not(.checked):not(.dummy-entry):not(.dragging)")];
+    
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+    
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
 
     function addDummyEntry(currentList, ul, focusDummy = false) {
         const li = document.createElement("li");
