@@ -1,7 +1,7 @@
 const config = require("./config.json");
 
-let lists = [];
-let form; // Formular für neue Listen
+let lists = []; // Liste von Listen global verfügbar machen
+let activeListId = null; // speichert die aktive Listen-ID
 
 document.addEventListener("DOMContentLoaded", () => {
     const listLoader = document.getElementById("listLoader");
@@ -27,8 +27,9 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             lists.push(newList);
             writeFile(lists);
+            activeListId = newList.id;
             renderListButtons(); // aktualisiert die Listenansicht
-            showListEntries(newList)
+            showListEntries(newList, true);
         }
     });    
 
@@ -47,67 +48,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderListButtons() {
         listContainer.innerHTML = ""; // Vorherige Buttons löschen
-
+    
         lists.forEach(list => {
             const button = document.createElement("button");
             button.textContent = list.name;
             button.id = `list_${list.id}`;
+    
+            // Wenn diese Liste aktiv ist, gib ihr die .active-Klasse
+            if (list.id === activeListId) {
+                button.classList.add("active");
+            }
+    
             button.addEventListener("click", () => {
-                showListEntries(list);
+                activeListId = list.id; // aktiviere diese Liste
+                showListEntries(list, false);
+                renderListButtons(); // Buttons neu rendern → nur einer bekommt .active
             });
+    
             listContainer.appendChild(button);
         });
+    }    
 
-    }
+    function showListEntries(list, focusDummy = false) {
 
-    function showListEntries(list) {
         entryContainer.innerHTML = `<h2>${list.name}</h2><ul></ul>`;
         const ul = entryContainer.querySelector("ul");
     
-        list.entries.forEach(entry => {
+        const activeEntries = list.entries.filter(e => e.active);
+        const checkedEntries = list.entries.filter(e => !e.active);
+    
+        function createEntryElement(entry) {
             const li = document.createElement("li");
-        
+    
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `entry_${entry.id}`;
             checkbox.checked = !entry.active;
-        
+    
             const label = document.createElement("label");
             label.htmlFor = checkbox.id;
             label.textContent = entry.name;
-        
+    
             li.appendChild(checkbox);
             li.appendChild(label);
-            ul.appendChild(li);
-        
-            // Anfangsstatus setzen
             li.classList.toggle("checked", checkbox.checked);
-        
-            // ✅ Nur bei Änderung der Checkbox — durch Klick auf Label ODER auf Checkbox selbst
+    
             checkbox.addEventListener("change", () => {
-                li.classList.toggle("checked", checkbox.checked);
                 const currentList = lists.find(l => l.id === list.id);
                 const currentEntry = currentList.entries.find(e => e.id === entry.id);
                 currentEntry.active = !checkbox.checked;
                 writeFile(lists);
+                showListEntries(currentList); // neu sortieren & anzeigen
             });
-        
-            // ✅ Klick auf das gesamte <li> (außerhalb von Checkbox oder Label) toggelt ebenfalls
+    
             li.addEventListener("click", (e) => {
-                // Kein Umschalten, wenn auf Checkbox oder Label direkt geklickt wurde
                 if (e.target === li) {
-                    checkbox.click(); // löst den change-Event sauber aus
+                    checkbox.click();
                 }
             });
-        });                
     
-        addDummyEntry(list, ul); // Neuer Eintrag unten
+            return li;
+        }
     
-        // ► Container für die beiden Buttons
+        activeEntries.forEach(entry => {
+            ul.appendChild(createEntryElement(entry));
+        });
+    
+        if (checkedEntries.length > 0) {
+            const divider = document.createElement("hr");
+            ul.appendChild(divider);
+        }
+    
+        checkedEntries.forEach(entry => {
+            ul.appendChild(createEntryElement(entry));
+        });
+
+        const dividerAboveDummy = document.createElement("hr");
+        ul.appendChild(dividerAboveDummy);
+    
+        addDummyEntry(list, ul, focusDummy); // neuer Eintrag unten, Fokus optional
+
+        const dividerBelowDummy = document.createElement("hr");
+        ul.appendChild(dividerBelowDummy);
+    
         const buttonRow = document.createElement("div");
         buttonRow.className = "button-row";
     
-        // ✔ Abgehakte löschen
         const clearCheckedButton = document.createElement("button");
         clearCheckedButton.textContent = "✔ Abgehakte löschen";
         clearCheckedButton.className = "clear-checked-button";
@@ -116,11 +142,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 const currentList = lists.find(l => l.id === list.id);
                 currentList.entries = currentList.entries.filter(e => e.active);
                 writeFile(lists);
-                showListEntries(currentList);
+                showListEntries(currentList, false);
             }
         });
     
-        // 🗑 Liste löschen
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "Liste löschen 🗑";
         deleteButton.className = "delete-button";
@@ -130,21 +155,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 writeFile(lists);
                 entryContainer.innerHTML = "";
                 entryContainer.classList.add("hidden");
+                activeListId = null;
                 renderListButtons();
             }
         });
     
-        // ► Buttons in den gemeinsamen Flex-Container einfügen
         buttonRow.appendChild(clearCheckedButton);
         buttonRow.appendChild(deleteButton);
-    
-        // ► Button-Container zum entryContainer hinzufügen
         entryContainer.appendChild(buttonRow);
     
         entryContainer.classList.remove("hidden");
-    }    
+    }            
 
-    function addDummyEntry(currentList, ul) {
+    function addDummyEntry(currentList, ul, focusDummy = false) {
         const li = document.createElement("li");
         li.classList.add("dummy-entry");
     
@@ -160,13 +183,13 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("input", () => {
             saveButton.style.display = input.value.trim() ? "inline-block" : "none";
         });
-
+    
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
-                e.preventDefault(); // Verhindert Absenden eines Formulars
+                e.preventDefault();
                 saveButton.click();
             }
-        });        
+        });
     
         saveButton.addEventListener("click", () => {
             const entryText = input.value.trim();
@@ -181,20 +204,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const current = lists.find(l => l.id === currentList.id);
             current.entries.push(newEntry);
             writeFile(lists);
-            showListEntries(current);
-    
-            setTimeout(() => {
-                const newDummy = entryContainer.querySelector("ul li:last-child input[type='text']");
-                if (newDummy) newDummy.focus();
-            }, 100);
+            showListEntries(current, true); // Fokus wieder aktivieren
         });
     
         li.appendChild(input);
         li.appendChild(saveButton);
         ul.appendChild(li);
     
-        setTimeout(() => input.focus(), 100);
-    }                  
+        if (focusDummy) {
+            setTimeout(() => input.focus(), 100);
+        }
+    }                      
 
     function writeFile(contentJSON) {
         fetch(config.BIN_URL, {
