@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const listLoader = document.getElementById("listLoader");
     const entryContainer = document.getElementById("entryContainer");
 
-    listLoader.innerHTML = `<p id="listHeader">Deine Listen</p><div id="listContainer"></div>`;
+    listLoader.innerHTML = `<h2 id="listHeader">Deine Listen</h2><div id="listContainer"></div>`;
     const listContainer = document.getElementById("listContainer");
 
     fetch(config.BIN_URL, {
@@ -33,8 +33,6 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             listContainer.appendChild(button);
         });
-
-        addNewListDummy();
 
     }
 
@@ -69,6 +67,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         addDummyEntry(list, ul); // Neuer Eintrag unten
 
+        // Abgehakte löschen
+        const clearCheckedButton = document.createElement("button");
+        clearCheckedButton.textContent = "✔ Abgehakte Einträge entfernen";
+        clearCheckedButton.className = "clear-checked-button";
+        clearCheckedButton.addEventListener("click", () => {
+            const currentList = lists.find(l => l.id === list.id);
+            currentList.entries = currentList.entries.filter(e => e.active);
+            writeFile(lists);
+            showListEntries(currentList);
+        });
+        entryContainer.appendChild(clearCheckedButton);
+
         // Liste löschen
         const deleteButton = document.createElement("button");
         deleteButton.textContent = "🗑 Liste löschen";
@@ -82,18 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
         entryContainer.appendChild(deleteButton);
-
-        // Abgehakte löschen
-        const clearCheckedButton = document.createElement("button");
-        clearCheckedButton.textContent = "✔ Abgehakte Einträge entfernen";
-        clearCheckedButton.className = "clear-checked-button";
-        clearCheckedButton.addEventListener("click", () => {
-            const currentList = lists.find(l => l.id === list.id);
-            currentList.entries = currentList.entries.filter(e => e.active);
-            writeFile(lists);
-            showListEntries(currentList);
-        });
-        entryContainer.appendChild(clearCheckedButton);
+        
     }
 
     function addDummyEntry(currentList, ul) {
@@ -146,52 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ul.appendChild(li);
     
         setTimeout(() => input.focus(), 100);
-    }    
-
-    function addNewListDummy() {
-        const dummy = document.createElement("div");
-        dummy.classList.add("dummy-list");
-    
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = "Neue Liste hinzufügen...";
-    
-        const saveButton = document.createElement("button");
-        saveButton.textContent = "💾";
-        saveButton.classList.add("save-list-button");
-    
-        input.addEventListener("input", () => {
-            saveButton.style.display = input.value.trim() ? "inline-block" : "none";
-        });
-    
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                saveButton.click();
-            }
-        });
-    
-        saveButton.addEventListener("click", () => {
-            const name = input.value.trim();
-            if (!name) return;
-    
-            const newList = {
-                id: generateId(),
-                name: name,
-                entries: []
-            };
-    
-            lists.push(newList);
-            writeFile(lists);
-            renderListButtons();
-        });
-    
-        dummy.appendChild(input);
-        dummy.appendChild(saveButton);
-        listContainer.appendChild(dummy);
-    
-        setTimeout(() => input.focus(), 100);
-    }        
+    }                  
 
     function writeFile(contentJSON) {
         fetch(config.BIN_URL, {

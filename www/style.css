@@ -1,4 +1,4 @@
-/* ===== Seitenstruktur ===== */
+/* ===== Grundstruktur & Layout ===== */
 
 body {
     font-family: "Saira", sans-serif;
@@ -40,65 +40,65 @@ footer a {
     display: flex;
 }
 
-/* ===== Karten-Loader ===== */
+/* ===== Container-Styling ===== */
 
-#listLoader {
-    display: block; /* statt flex */
+#listLoader,
+#entryContainer {
     background: #333;
     color: #DEDEDE;
-    text-align: center;
     border-radius: 8px;
-    margin: 5px auto;
-    max-width: 100%;
     padding: 10px;
-}
-
-#listContainer button {
-    display: block;
-    width: 90%;
-    margin: 10px auto;
-    padding: 10px;
-    background-color: #444;
-    border: none;
-    border-radius: 4px;
-    color: #DEDEDE;
-    font-size: 16px;
-    cursor: pointer;
-    text-align: left;
+    margin: 20px auto;
+    max-width: 600px;
 }
 
 #entryContainer {
-    margin: 20px auto;
-    padding: 10px;
-    max-width: 600px;
     background: #222;
-    border-radius: 8px;
 }
 
-#entryContainer ul {
+/* ===== Listenelemente & Buttons ===== */
+
+ul {
     list-style: none;
     padding: 0;
 }
 
-#entryContainer li {
-    margin: 8px 0;
-    padding: 10px;
-    background-color: #444;
-    border-radius: 4px;
+li {
     display: flex;
     align-items: center;
+    background-color: #444;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    width: 100%;
 }
 
-#entryContainer li.checked label {
+li.checked label {
     text-decoration: line-through;
     color: #888;
 }
 
-#entryContainer input[type="checkbox"] {
+input[type="checkbox"] {
     margin-right: 10px;
 }
 
-/* ===== Formulareingaben und Buttons ===== */
+/* ===== Allgemeine Input-Felder ===== */
+
+input[type="text"],
+.dummy-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #222;
+    color: #DEDEDE;
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* ===== Formulare & Buttons ===== */
 
 form {
     margin-top: 20px;
@@ -106,128 +106,62 @@ form {
 }
 
 form input[type="text"] {
-    width: 80%;
-    padding: 10px;
-    font-size: 16px;
     background-color: #333;
-    color: #DEDEDE;
-    border: 1px solid #555;
-    border-radius: 4px;
+    width: 80%;
     margin-bottom: 10px;
 }
 
-form button {
-    padding: 10px 20px;
+button,
+button.save-entry-button,
+button.delete-button,
+button.clear-checked-button {
     font-size: 16px;
-    background-color: #00AEFF;
-    color: #fff;
+    padding: 10px 20px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 }
 
-/* ===== Spezial-Buttons (z. B. löschen, aufräumen) ===== */
+/* ===== Buttons – Spezifische Farben ===== */
+
+button {
+    background-color: #00AEFF;
+    color: #fff;
+}
+
+button.save-entry-button {
+    display: none;
+    margin-left: 10px;
+    flex-shrink: 0;
+    align-self: stretch;
+    box-sizing: border-box;
+}
 
 button.delete-button {
     background-color: #800;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
     margin-top: 15px;
-    cursor: pointer;
 }
 
 button.clear-checked-button {
     background-color: #555;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
     margin-top: 10px;
-    cursor: pointer;
 }
 
-/* Dummy-Eintrag (Eintragszeile am Ende einer Liste) */
-#entryContainer .dummy-entry {
-    display: flex;
-    align-items: center;
-    background-color: #333;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 8px 0;
-    box-sizing: border-box;
-}
+/* ===== Button Interaktion ===== */
 
-#entryContainer .dummy-entry input[type="text"] {
-    flex: 1;
-    padding: 10px;
-    font-size: 16px;
-    background-color: #222;
-    color: #DEDEDE;
-    border: 1px solid #555;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-#entryContainer .dummy-entry button.save-entry-button {
-    margin-left: 10px;
-    background-color: #00AEFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 10px;
-    cursor: pointer;
-    display: none;
-    flex-shrink: 0;
-    font-size: 16px;
-}
-
-/* iOS-/Touch-Tap-Feedback für Speichern-Button */
-#entryContainer .dummy-entry button.save-entry-button:active {
+button.save-entry-button:active {
     opacity: 0.8;
     transform: scale(0.97);
 }
 
-/* === Dummy-Liste: optisch wie Dummy-Eintrag === */
-#listContainer .dummy-list {
-    display: flex;
-    align-items: center;
-    background-color: #444;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 10px auto;
+/* ===== Listen-Auswahl-Buttons ===== */
+
+#listContainer button {
+    display: block;
     width: 90%;
-    box-sizing: border-box;
-}
-
-#listContainer .dummy-list input[type="text"] {
-    flex: 1;
+    margin: 10px auto;
     padding: 10px;
-    font-size: 16px;
-    background-color: #222;
+    background-color: #444;
     color: #DEDEDE;
-    border: 1px solid #555;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-#listContainer .dummy-list button.save-list-button {
-    margin-left: 10px;
-    background-color: #00AEFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 10px;
-    cursor: pointer;
-    display: none;
-    flex-shrink: 0;
-    font-size: 16px;
-    height: 100%;
-}
-
-/* Optional: iOS Tap Feedback */
-#listContainer .dummy-list button.save-list-button:active {
-    opacity: 0.8;
-    transform: scale(0.97);
+    text-align: left;
 }
