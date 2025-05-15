@@ -148,63 +148,86 @@ button.clear-checked-button {
     cursor: pointer;
 }
 
-/* ===== Dummy-Eintrag (Inline-Input) ===== */
-
-li.dummy-entry {
-    background-color: #333;
-}
-
-li.dummy-entry input[type="text"] {
-    flex: 1;
-    padding: 8px;
-    font-size: 16px;
-    background-color: #333;
-    color: #DEDEDE;
-    border: 1px solid #555;
-    border-radius: 4px;
-}
-
-/* Speichern-Button im Dummy-Eintrag */
-button.save-button {
-    margin-left: 10px;
-    background-color: #00AEFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 8px;
-    cursor: pointer;
-    display: none;
-}
-
-/* ===== Dummy-Liste (analog zu Dummy-Eintrag) ===== */
-
-#listContainer .dummy-list {
+/* Dummy-Eintrag (Eintragszeile am Ende einer Liste) */
+#entryContainer .dummy-entry {
     display: flex;
     align-items: center;
     background-color: #333;
     border-radius: 4px;
     padding: 10px;
-    margin: 10px auto;
-    width: 90%;
+    margin: 8px 0;
+    box-sizing: border-box;
 }
 
-#listContainer .dummy-list input[type="text"] {
+#entryContainer .dummy-entry input[type="text"] {
     flex: 1;
-    padding: 8px;
+    padding: 10px;
     font-size: 16px;
     background-color: #222;
     color: #DEDEDE;
     border: 1px solid #555;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
-#listContainer .save-list-button {
+#entryContainer .dummy-entry button.save-entry-button {
     margin-left: 10px;
     background-color: #00AEFF;
     color: #fff;
     border: none;
     border-radius: 4px;
-    padding: 8px;
+    padding: 10px;
     cursor: pointer;
     display: none;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+/* iOS-/Touch-Tap-Feedback für Speichern-Button */
+#entryContainer .dummy-entry button.save-entry-button:active {
+    opacity: 0.8;
+    transform: scale(0.97);
+}
+
+/* === Dummy-Liste: optisch wie Dummy-Eintrag === */
+#listContainer .dummy-list {
+    display: flex;
+    align-items: center;
+    background-color: #444;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px auto;
+    width: 90%;
+    box-sizing: border-box;
+}
+
+#listContainer .dummy-list input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #222;
+    color: #DEDEDE;
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#listContainer .dummy-list button.save-list-button {
+    margin-left: 10px;
+    background-color: #00AEFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    display: none;
+    flex-shrink: 0;
+    font-size: 16px;
+    height: 100%;
+}
+
+/* Optional: iOS Tap Feedback */
+#listContainer .dummy-list button.save-list-button:active {
+    opacity: 0.8;
+    transform: scale(0.97);
 }

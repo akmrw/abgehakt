@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
         const saveButton = document.createElement("button");
         saveButton.textContent = "💾";
-        saveButton.classList.add("save-button");
+        saveButton.classList.add("save-entry-button");
     
         input.addEventListener("input", () => {
             saveButton.style.display = input.value.trim() ? "inline-block" : "none";
@@ -163,13 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("input", () => {
             saveButton.style.display = input.value.trim() ? "inline-block" : "none";
         });
-
+    
         input.addEventListener("keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
                 saveButton.click();
             }
-        });        
+        });
     
         saveButton.addEventListener("click", () => {
             const name = input.value.trim();
@@ -183,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
             lists.push(newList);
             writeFile(lists);
-            renderListButtons(); // Neue Buttons inkl. neuem Dummy
+            renderListButtons();
         });
     
         dummy.appendChild(input);
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
         listContainer.appendChild(dummy);
     
         setTimeout(() => input.focus(), 100);
-    }    
+    }        
 
     function writeFile(contentJSON) {
         fetch(config.BIN_URL, {
