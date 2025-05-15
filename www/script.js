@@ -34,30 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
             listContainer.appendChild(button);
         });
 
-        // Neues Listenformular
-        form = document.createElement("form");
-        form.innerHTML = `
-          <input type="text" id="newListName" placeholder="Neue Liste..." required>
-          <button type="submit">Liste hinzufügen</button>
-        `;
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            const newName = form.querySelector("#newListName").value.trim();
-            if (!newName) return;
+        addNewListDummy();
 
-            const newList = {
-                id: generateId(),
-                name: newName,
-                entries: []
-            };
-
-            lists.push(newList);
-            writeFile(lists);
-            renderListButtons();
-            form.reset();
-        });
-
-        listContainer.appendChild(form);
     }
 
     function showListEntries(list) {
@@ -134,6 +112,13 @@ document.addEventListener("DOMContentLoaded", () => {
         input.addEventListener("input", () => {
             saveButton.style.display = input.value.trim() ? "inline-block" : "none";
         });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault(); // Verhindert Absenden eines Formulars
+                saveButton.click();
+            }
+        });        
     
         saveButton.addEventListener("click", () => {
             const entryText = input.value.trim();
@@ -159,6 +144,51 @@ document.addEventListener("DOMContentLoaded", () => {
         li.appendChild(input);
         li.appendChild(saveButton);
         ul.appendChild(li);
+    
+        setTimeout(() => input.focus(), 100);
+    }    
+
+    function addNewListDummy() {
+        const dummy = document.createElement("div");
+        dummy.classList.add("dummy-list");
+    
+        const input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Neue Liste hinzufügen...";
+    
+        const saveButton = document.createElement("button");
+        saveButton.textContent = "💾";
+        saveButton.classList.add("save-list-button");
+    
+        input.addEventListener("input", () => {
+            saveButton.style.display = input.value.trim() ? "inline-block" : "none";
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                saveButton.click();
+            }
+        });        
+    
+        saveButton.addEventListener("click", () => {
+            const name = input.value.trim();
+            if (!name) return;
+    
+            const newList = {
+                id: generateId(),
+                name: name,
+                entries: []
+            };
+    
+            lists.push(newList);
+            writeFile(lists);
+            renderListButtons(); // Neue Buttons inkl. neuem Dummy
+        });
+    
+        dummy.appendChild(input);
+        dummy.appendChild(saveButton);
+        listContainer.appendChild(dummy);
     
         setTimeout(() => input.focus(), 100);
     }    

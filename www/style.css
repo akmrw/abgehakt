@@ -175,3 +175,36 @@ button.save-button {
     cursor: pointer;
     display: none;
 }
+
+/* ===== Dummy-Liste (analog zu Dummy-Eintrag) ===== */
+
+#listContainer .dummy-list {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px auto;
+    width: 90%;
+}
+
+#listContainer .dummy-list input[type="text"] {
+    flex: 1;
+    padding: 8px;
+    font-size: 16px;
+    background-color: #222;
+    color: #DEDEDE;
+    border: 1px solid #555;
+    border-radius: 4px;
+}
+
+#listContainer .save-list-button {
+    margin-left: 10px;
+    background-color: #00AEFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px;
+    cursor: pointer;
+    display: none;
+}
