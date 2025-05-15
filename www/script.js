@@ -42,12 +42,21 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .then(res => res.json())
     .then(data => {
-        lists = data.record;
+        // Filtere alle leeren Objekte wie [{}] raus
+        lists = data.record.filter(l => Object.keys(l).length > 0);
         renderListButtons();
     });
+    
 
     function renderListButtons() {
         listContainer.innerHTML = ""; // Vorherige Buttons löschen
+
+        if (lists.length === 0) {
+            listContainer.innerHTML = `
+                <p>Es sind noch keine Listen vorhanden.<br>
+                Erstelle eine neue über den (+)-Button oben rechts!</p>
+            `;
+        }
     
         lists.forEach(list => {
             const button = document.createElement("button");
@@ -282,6 +291,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }                      
 
     function writeFile(contentJSON) {
+        // Wenn leeres Array, ersetze durch [{}]
+        const safeContent = Array.isArray(contentJSON) && contentJSON.length === 0
+            ? [{}]
+            : contentJSON;
+    
         fetch(config.BIN_URL, {
             method: "PUT",
             headers: {
@@ -289,7 +303,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "X-Master-Key": config.API_KEY,
                 "X-Bin-Versioning": false
             },
-            body: JSON.stringify(contentJSON)
+            body: JSON.stringify(safeContent)
         })
         .then(res => res.json())
         .then(data => {
@@ -298,7 +312,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(err => {
             console.error("Fehler beim Speichern:", err);
         });
-    }
+    }    
 
     function generateId() {
         return '_' + Math.random().toString(36).substr(2, 9);
