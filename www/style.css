@@ -1,10 +1,10 @@
 /* ===== Grundstruktur & Layout ===== */
 
 body {
-    font-family: "Saira", sans-serif;
+    font-family: "Rubik", sans-serif;
     font-size: 16px;
-    color: #DEDEDE;
-    background-color: black;
+    color: #2C4641;
+    background-color: #f7f7f7;
 }
 
 header {
@@ -44,16 +44,13 @@ footer a {
 
 #listLoader,
 #entryContainer {
-    background: #333;
-    color: #DEDEDE;
+    background: #ffffff;
+    color: #2C4641;
     border-radius: 8px;
     padding: 10px;
     margin: 20px auto;
     max-width: 600px;
-}
-
-#entryContainer {
-    background: #222;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 /* ===== Listenelemente & Buttons ===== */
@@ -66,7 +63,7 @@ ul {
 li {
     display: flex;
     align-items: center;
-    background-color: #444;
+    background-color: #eaeaea;
     border-radius: 4px;
     padding: 10px;
     margin: 8px 0;
@@ -76,7 +73,7 @@ li {
 
 li.checked label {
     text-decoration: line-through;
-    color: #888;
+    color: #aaa;
 }
 
 input[type="checkbox"] {
@@ -90,9 +87,9 @@ input[type="text"],
     flex: 1;
     padding: 10px;
     font-size: 16px;
-    background-color: #222;
-    color: #DEDEDE;
-    border: 1px solid #555;
+    background-color: #ffffff;
+    color: #2C4641;
+    border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
     width: 100%;
@@ -106,10 +103,12 @@ form {
 }
 
 form input[type="text"] {
-    background-color: #333;
+    background-color: #f9f9f9;
     width: 80%;
     margin-bottom: 10px;
 }
+
+/* ===== Buttons ===== */
 
 button,
 button.save-entry-button,
@@ -137,14 +136,23 @@ button.save-entry-button {
     box-sizing: border-box;
 }
 
-button.delete-button {
-    background-color: #800;
+.button-row {
+    display: flex;
+    justify-content: space-between;
     margin-top: 15px;
+    gap: 10px;
 }
 
-button.clear-checked-button {
-    background-color: #555;
-    margin-top: 10px;
+button.clear-checked-button,
+button.delete-button {
+    font-size: 12px;
+    background-color: #cc0000;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: auto;
 }
 
 /* ===== Button Interaktion ===== */
@@ -158,10 +166,33 @@ button.save-entry-button:active {
 
 #listContainer button {
     display: block;
-    width: 90%;
+    width: 100%;
     margin: 10px auto;
     padding: 10px;
-    background-color: #444;
-    color: #DEDEDE;
+    background-color: #e0e0e0;
+    color: #2C4641;
     text-align: left;
+}
+
+#listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 600px;
+    margin: 0 auto 20px;
+    padding: 0 10px;
+}
+
+#listHeader h2 {
+    margin: 0;
+}
+
+#addListButton {
+    font-size: 24px;
+    padding: 3px 10px;
+    background-color: #00AEFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }

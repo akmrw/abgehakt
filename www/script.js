@@ -7,7 +7,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const listLoader = document.getElementById("listLoader");
     const entryContainer = document.getElementById("entryContainer");
 
-    listLoader.innerHTML = `<h2 id="listHeader">Deine Listen</h2><div id="listContainer"></div>`;
+    listLoader.innerHTML = `
+    <div id="listHeader">
+        <h2>Deine Listen</h2>
+        <button id="addListButton">+</button>
+    </div>
+    <div id="listContainer">
+        <!-- Dynamisch erzeugte Buttons für jede Liste -->
+    </div>
+    `;
+
+    document.getElementById("addListButton").addEventListener("click", () => {
+        const name = prompt("Wie soll die neue Liste heißen?");
+        if (name && name.trim()) {
+            const newList = {
+                id: Date.now(),
+                name: name.trim(),
+                entries: []
+            };
+            lists.push(newList);
+            writeFile(lists);
+            renderListButtons(); // aktualisiert die Listenansicht
+            showListEntries(newList)
+        }
+    });    
+
     const listContainer = document.getElementById("listContainer");
 
     fetch(config.BIN_URL, {
@@ -39,23 +63,27 @@ document.addEventListener("DOMContentLoaded", () => {
     function showListEntries(list) {
         entryContainer.innerHTML = `<h2>${list.name}</h2><ul></ul>`;
         const ul = entryContainer.querySelector("ul");
-
+    
         list.entries.forEach(entry => {
             const li = document.createElement("li");
-
+        
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.id = `entry_${entry.id}`;
             checkbox.checked = !entry.active;
-
+        
             const label = document.createElement("label");
             label.htmlFor = checkbox.id;
             label.textContent = entry.name;
-
+        
             li.appendChild(checkbox);
             li.appendChild(label);
             ul.appendChild(li);
-
+        
+            // Anfangsstatus setzen
+            li.classList.toggle("checked", checkbox.checked);
+        
+            // ✅ Nur bei Änderung der Checkbox — durch Klick auf Label ODER auf Checkbox selbst
             checkbox.addEventListener("change", () => {
                 li.classList.toggle("checked", checkbox.checked);
                 const currentList = lists.find(l => l.id === list.id);
@@ -63,37 +91,58 @@ document.addEventListener("DOMContentLoaded", () => {
                 currentEntry.active = !checkbox.checked;
                 writeFile(lists);
             });
-        });
-
+        
+            // ✅ Klick auf das gesamte <li> (außerhalb von Checkbox oder Label) toggelt ebenfalls
+            li.addEventListener("click", (e) => {
+                // Kein Umschalten, wenn auf Checkbox oder Label direkt geklickt wurde
+                if (e.target === li) {
+                    checkbox.click(); // löst den change-Event sauber aus
+                }
+            });
+        });                
+    
         addDummyEntry(list, ul); // Neuer Eintrag unten
-
-        // Abgehakte löschen
+    
+        // ► Container für die beiden Buttons
+        const buttonRow = document.createElement("div");
+        buttonRow.className = "button-row";
+    
+        // ✔ Abgehakte löschen
         const clearCheckedButton = document.createElement("button");
-        clearCheckedButton.textContent = "✔ Abgehakte Einträge entfernen";
+        clearCheckedButton.textContent = "✔ Abgehakte löschen";
         clearCheckedButton.className = "clear-checked-button";
         clearCheckedButton.addEventListener("click", () => {
-            const currentList = lists.find(l => l.id === list.id);
-            currentList.entries = currentList.entries.filter(e => e.active);
-            writeFile(lists);
-            showListEntries(currentList);
+            if (confirm("Wirklich alle abgehakten Einträge löschen?")) {
+                const currentList = lists.find(l => l.id === list.id);
+                currentList.entries = currentList.entries.filter(e => e.active);
+                writeFile(lists);
+                showListEntries(currentList);
+            }
         });
-        entryContainer.appendChild(clearCheckedButton);
-
-        // Liste löschen
+    
+        // 🗑 Liste löschen
         const deleteButton = document.createElement("button");
-        deleteButton.textContent = "🗑 Liste löschen";
+        deleteButton.textContent = "Liste löschen 🗑";
         deleteButton.className = "delete-button";
         deleteButton.addEventListener("click", () => {
             if (confirm("Diese Liste wirklich löschen?")) {
                 lists = lists.filter(l => l.id !== list.id);
                 writeFile(lists);
                 entryContainer.innerHTML = "";
+                entryContainer.classList.add("hidden");
                 renderListButtons();
             }
         });
-        entryContainer.appendChild(deleteButton);
-        
-    }
+    
+        // ► Buttons in den gemeinsamen Flex-Container einfügen
+        buttonRow.appendChild(clearCheckedButton);
+        buttonRow.appendChild(deleteButton);
+    
+        // ► Button-Container zum entryContainer hinzufügen
+        entryContainer.appendChild(buttonRow);
+    
+        entryContainer.classList.remove("hidden");
+    }    
 
     function addDummyEntry(currentList, ul) {
         const li = document.createElement("li");
@@ -169,4 +218,5 @@ document.addEventListener("DOMContentLoaded", () => {
     function generateId() {
         return '_' + Math.random().toString(36).substr(2, 9);
     }
+
 });
